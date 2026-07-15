@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Hub · Pray Station Lagos 2026</title>
+<style>
+  :root{
+    --maroon:#4A1019; --maroon-glow:#75212C; --accent:#701B26;
+    --orange:#EDA35F; --orange-soft:#F2C79A; --flame1:#E98A3C; --flame2:#F7C983;
+    --paper:#FFFFFF; --ink:#141414; --ink-soft:#4A4A4A;
+    --line:#E3DED4; --field:#FBFAF7; --field-line:#D8D2C6; --soft:#F5E3D3;
+    --green:#2E7D32; --amber:#B8860B; --red:#C0392B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--ink);min-height:100vh;
+    background:radial-gradient(1200px 600px at 50% -100px,var(--maroon-glow),var(--maroon))}
+  .serif{font-family:Georgia,'Times New Roman',serif}
+  nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;background:rgba(58,12,19,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.18)}
+  nav .org{color:#fff;font-weight:600;font-size:14px}
+  nav .tabs{display:flex;gap:4px;overflow-x:auto;max-width:70vw;scrollbar-width:none}
+  nav .tabs::-webkit-scrollbar{display:none}
+  nav button{border:0;background:transparent;color:#E9C6A8;font-size:13px;font-weight:500;padding:6px 10px;border-radius:999px;cursor:pointer;white-space:nowrap}
+  nav button.active{background:#fff;color:var(--accent)}
+  .page{max-width:1000px;margin:0 auto;padding:24px 16px 64px}
+  .hidden{display:none!important}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:20px}
+  .eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;color:var(--accent);margin-bottom:4px}
+  .on-red{color:var(--orange)}
+  h2{font-size:22px;font-weight:400}
+  h2.on-red{color:#fff}
+  .sec{margin-bottom:8px}
+  input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;outline:none;font-size:14px;
+    background:var(--field);color:var(--ink);border:1px solid var(--field-line);font-family:inherit}
+  label.small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--accent)}
+  .btn{padding:11px 16px;border-radius:10px;border:0;font-weight:700;font-size:14px;cursor:pointer;background:var(--accent);color:#fff}
+  .btn.outline{background:transparent;border:1.5px solid var(--accent);color:var(--accent)}
+  .btn.ghost{background:transparent;border:0;color:var(--ink-soft);font-weight:500}
+  .btn.full{display:block;width:100%}
+  .grid2{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(min-width:760px){.grid4{grid-template-columns:repeat(4,1fr)}}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+  .stat .n{font-size:30px;font-weight:800;color:var(--accent)}
+  .stat .l{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:50;padding:10px 18px;border-radius:999px;
+    font-size:14px;background:#fff;color:var(--accent);font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.35);opacity:0;transition:opacity .25s;pointer-events:none}
+  .toast.show{opacity:1}
+  .hint{font-size:12px;color:#7A7A7A;margin-top:6px}
+  .countbar{text-align:center;color:#fff;font-weight:700;margin-top:4px}
+  .countbar span{color:var(--flame2)}
+  /* Kanban */
+  .board{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+  @media(min-width:820px){.board{grid-template-columns:repeat(4,1fr)}}
+  .col{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:12px}
+  .col h3{color:#fff;font-size:13px;letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between}
+  .col h3 span{color:var(--orange-soft)}
+  .task{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;font-size:14px}
+  .task .t{font-weight:600;line-height:1.35}
+  .task .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .tag{font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(112,27,38,.08);color:var(--accent);border:1px solid rgba(112,27,38,.25)}
+  .tag.p-High{background:rgba(192,57,43,.1);color:var(--red);border-color:rgba(192,57,43,.4)}
+  .tag.p-Low{background:rgba(46,125,50,.08);color:var(--green);border-color:rgba(46,125,50,.3)}
+  .tag.overdue{background:rgba(192,57,43,.12);color:var(--red);border-color:var(--red);font-weight:700}
+  .task .acts{display:flex;justify-content:space-between;margin-top:10px}
+  .task .acts button{border:0;background:var(--field);border:1px solid var(--field-line);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px}
+  .task .acts .del{color:var(--red)}
+  /* Timeline */
+  .ms{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+  .ms:last-child{border-bottom:0}
+  .dot{width:14px;height:14px;border-radius:50%;margin-top:4px;flex-shrink:0;border:2px solid var(--accent);background:#fff}
+  .dot.done{background:var(--green);border-color:var(--green)}
+  .dot.overdue{background:var(--red);border-color:var(--red)}
+  .ms .title{font-weight:600}
+  .ms .date{font-size:13px;color:var(--ink-soft)}
+  .ms .right{margin-left:auto;display:flex;gap:6px}
+  .ms button{border:1px solid var(--field-line);background:var(--field);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px}
+  /* Risks */
+  .risk{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px}
+  .risk.closed{opacity:.55}
+  .risk .d{font-weight:600}
+  .risk .m{font-size:13px;color:var(--ink-soft);margin-top:4px}
+  svg text{font-family:'Segoe UI',system-ui,sans-serif}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--ink-soft);margin-top:8px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .filters select{width:auto;padding:7px 10px;font-size:13px}
+</style>
+</head>
+<body>
+
+<script>
+const FIREBASE_DB_URL = "https://pray-station-1e097-default-rtdb.europe-west1.firebasedatabase.app";
+const EVENT_DATE = "2026-09-04";
+</script>
+
+<nav>
+  <span class="org">Pray Station · Project Hub</span>
+  <div class="tabs" id="tabBar">
+    <button data-tab="dash" class="active">Dashboard</button>
+    <button data-tab="board">Board</button>
+    <button data-tab="timeline">Timeline</button>
+    <button data-tab="risks">Risks</button>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- PIN gate -->
+  <div id="gate" class="card" style="max-width:420px;margin:48px auto 0">
+    <div class="sec"><div class="eyebrow">Team access</div><h2 class="serif" id="gateTitle">Enter hub PIN</h2></div>
+    <p id="gateHint" class="hint hidden" style="margin-bottom:10px">First time here. Set a PIN and share it only with the planning team.</p>
+    <div style="display:grid;gap:10px;margin-top:10px">
+      <input id="pin" type="password" placeholder="PIN">
+      <button class="btn full" id="gateBtn" onclick="tryPin()">Unlock</button>
+    </div>
+  </div>
+
+  <div id="hub" class="hidden">
+
+    <!-- ============ DASHBOARD ============ -->
+    <div id="tab-dash">
+      <p class="countbar" id="countdown"></p>
+      <div class="grid4" style="margin-top:16px">
+        <div class="stat"><div class="n" id="sTotal">0</div><div class="l">Total tasks</div></div>
+        <div class="stat"><div class="n" id="sDone">0</div><div class="l">Done</div></div>
+        <div class="stat"><div class="n" id="sProg">0</div><div class="l">In progress</div></div>
+        <div class="stat"><div class="n" id="sOver" style="color:var(--red)">0</div><div class="l">Overdue</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="sec"><div class="eyebrow">Status</div><h2 class="serif">Tasks by status</h2></div>
+          <div id="donut"></div>
+        </div>
+        <div class="card">
+          <div class="sec"><div class="eyebrow">Workstreams</div><h2 class="serif">Done vs total</h2></div>
+          <div id="bars"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec"><div class="eyebrow">Burndown</div><h2 class="serif">Tasks remaining to event day</h2></div>
+        <div id="burn"></div>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Actual remaining</span><span><i style="background:var(--orange)"></i>Ideal pace</span></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="sec"><div class="eyebrow">Next up</div><h2 class="serif">Upcoming deadlines</h2></div>
+          <div id="upcoming"></div>
+        </div>
+        <div class="card">
+          <div class="sec"><div class="eyebrow">Attention</div><h2 class="serif">Overdue tasks</h2></div>
+          <div id="overdueList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BOARD ============ -->
+    <div id="tab-board" class="hidden">
+      <div class="card">
+        <div class="sec"><div class="eyebrow">New task</div><h2 class="serif">Add to the board</h2></div>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="small">Task</label><input id="tTitle" placeholder="e.g. Confirm campsite booking"></div>
+          <div><label class="small">Owner</label><input id="tOwner" placeholder="e.g. Eden"></div>
+          <div><label class="small">Workstream</label>
+            <select id="tStream"></select></div>
+          <div><label class="small">Due date</label><input id="tDue" type="date"></div>
+          <div><label class="small">Priority</label>
+            <select id="tPrio"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+          <div style="display:flex;align-items:flex-end"><button class="btn full" onclick="addTask()">Add task</button></div>
+        </div>
+      </div>
+      <div class="filters">
+        <select id="fStream" onchange="render()"><option value="">All workstreams</option></select>
+        <select id="fOwner" onchange="render()"><option value="">All owners</option></select>
+      </div>
+      <div class="board" id="board"></div>
+    </div>
+
+    <!-- ============ TIMELINE ============ -->
+    <div id="tab-timeline" class="hidden">
+      <div class="card">
+        <div class="sec"><div class="eyebrow">New milestone</div><h2 class="serif">Add a milestone</h2></div>
+        <div class="grid2" style="margin-top:8px">
+          <div><label class="small">Milestone</label><input id="mTitle" placeholder="e.g. Venue locked in"></div>
+          <div><label class="small">Date</label><input id="mDate" type="date"></div>
+        </div>
+        <button class="btn" style="margin-top:12px" onclick="addMilestone()">Add milestone</button>
+      </div>
+      <div class="card">
+        <div class="sec"><div class="eyebrow">Road to camp</div><h2 class="serif">Milestones</h2></div>
+        <div id="msList"></div>
+      </div>
+    </div>
+
+    <!-- ============ RISKS ============ -->
+    <div id="tab-risks" class="hidden">
+      <div class="card">
+        <div class="sec"><div class="eyebrow">New risk</div><h2 class="serif">Log a risk or issue</h2></div>
+        <div style="display:grid;gap:10px;margin-top:8px">
+          <div><label class="small">Risk / issue</label><input id="rDesc" placeholder="e.g. Rain during outdoor sessions"></div>
+          <div class="grid2">
+            <div><label class="small">Impact</label><select id="rImpact"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+            <div><label class="small">Mitigation / plan</label><input id="rMit" placeholder="e.g. Canopy vendor on standby"></div>
+          </div>
+          <button class="btn" onclick="addRisk()">Log it</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec"><div class="eyebrow">Register</div><h2 class="serif">Risk register</h2></div>
+        <div id="riskList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const BASE = FIREBASE_DB_URL.replace(/\/+$/,"") + "/praystation2026/hub";
+const STREAMS = ["Registration","Venue & Logistics","Media & Publicity","Welfare & Accommodation","Volunteers","Finance","Program & Prayer"];
+const COLS = ["Backlog","To Do","In Progress","Done"];
+
+let tasks={}, milestones={}, risks={}, hubPin=null;
+
+function $(id){return document.getElementById(id)}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400)}
+function esc(s){const d=document.createElement("div");d.textContent=s??"";return d.innerHTML}
+async function dbGet(p){const r=await fetch(`${BASE}/${p}.json`);if(!r.ok)throw 0;return r.json()}
+async function dbPut(p,v){const r=await fetch(`${BASE}/${p}.json`,{method:"PUT",body:JSON.stringify(v)});return r.ok}
+async function dbPush(p,v){const r=await fetch(`${BASE}/${p}.json`,{method:"POST",body:JSON.stringify(v)});if(!r.ok)throw 0;return(await r.json()).name}
+async function dbDel(p){return fetch(`${BASE}/${p}.json`,{method:"DELETE"})}
+
+// ---------- PIN ----------
+let pinLoaded=false;
+async function boot(){
+  try{
+    hubPin=await dbGet("pin");
+    pinLoaded=true;
+  }catch(e){
+    hubPin=null;pinLoaded=false;
+    $("gateTitle").textContent="Can't reach the database";
+    $("gateHint").textContent="This screen needs a live internet connection to your Firebase database. If you're viewing this inside a preview or a downloaded file, open the live GitHub Pages link instead, then tap Unlock to retry.";
+    $("gateHint").classList.remove("hidden");
+    $("gateBtn").textContent="Retry connection";
+    return;
+  }
+  const isNew=!hubPin;
+  $("gateTitle").textContent=isNew?"Set the hub PIN":"Enter hub PIN";
+  $("gateBtn").textContent=isNew?"Set PIN and enter":"Unlock";
+  $("gateHint").textContent="First time here. Set a PIN and share it only with the planning team.";
+  $("gateHint").classList.toggle("hidden",!isNew);
+}
+async function tryPin(){
+  try{
+    if(!pinLoaded){
+      await boot();
+      if(!pinLoaded) return toast("Still no connection to the database.");
+      return toast("Connected! Now enter the PIN.");
+    }
+    const p=$("pin").value.trim();
+    if(!hubPin){
+      if(p.length<4) return toast("Choose a PIN of at least 4 characters.");
+      const ok=await dbPut("pin",p);
+      if(!ok) return toast("Could not save the PIN. Check your connection.");
+      hubPin=p;enter();
+    }else if(p===hubPin){enter();}
+    else toast("Incorrect PIN.");
+    $("pin").value="";
+  }catch(e){
+    toast("Connection problem. Are you on the live site?");
+  }
+}
+async function enter(){
+  $("gate").classList.add("hidden");$("hub").classList.remove("hidden");
+  await refresh();
+  setInterval(refresh,30000);
+  setInterval(tick,1000);
+}
+async function refresh(){
+  try{
+    const [t,m,r]=await Promise.all([dbGet("tasks"),dbGet("milestones"),dbGet("risks")]);
+    tasks=t||{};milestones=m||{};risks=r||{};
+    render();
+  }catch(e){toast("Could not reach the database.")}
+}
+
+// ---------- Tabs ----------
+document.querySelectorAll("#tabBar button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#tabBar button").forEach(x=>x.classList.toggle("active",x===b));
+  ["dash","board","timeline","risks"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==b.dataset.tab));
+}));
+
+// ---------- Helpers ----------
+const today=()=>new Date(new Date().toDateString());
+const isOverdue=t=>t.status!=="Done"&&t.due&&new Date(t.due+"T23:59:59")<new Date();
+function tick(){
+  const el=$("countdown");if(!el)return;
+  const d=Math.max(0,Math.ceil((new Date(EVENT_DATE)-new Date())/86400000));
+  el.innerHTML=`⏳ <span>${d} day${d===1?"":"s"}</span> to Pray Station · ${EVENT_DATE.split("-").reverse().join("/")}`;
+}
+
+// ---------- Board ----------
+function fillSelects(){
+  const s=$("tStream");if(s&&!s.options.length) STREAMS.forEach(x=>{const o=document.createElement("option");o.textContent=x;s.appendChild(o)});
+  const fs=$("fStream");
+  const cur=fs.value;
+  fs.innerHTML='<option value="">All workstreams</option>';
+  STREAMS.forEach(x=>{const o=document.createElement("option");o.textContent=x;fs.appendChild(o)});
+  fs.value=cur;
+  const owners=[...new Set(Object.values(tasks).map(t=>t.owner).filter(Boolean))].sort();
+  const fo=$("fOwner");const co=fo.value;
+  fo.innerHTML='<option value="">All owners</option>';
+  owners.forEach(x=>{const o=document.createElement("option");o.textContent=x;fo.appendChild(o)});
+  fo.value=co;
+}
+async function addTask(){
+  const title=$("tTitle").value.trim();
+  if(!title) return toast("Give the task a name.");
+  const t={title,owner:$("tOwner").value.trim(),stream:$("tStream").value,due:$("tDue").value,
+    prio:$("tPrio").value,status:"To Do",createdAt:Date.now(),completedAt:null};
+  try{const id=await dbPush("tasks",t);tasks[id]=t;
+    $("tTitle").value="";$("tOwner").value="";$("tDue").value="";
+    render();toast("Task added.");
+  }catch(e){toast("Could not save the task.")}
+}
+async function moveTask(id,dir){
+  const t=tasks[id];const i=COLS.indexOf(t.status)+dir;
+  if(i<0||i>=COLS.length)return;
+  t.status=COLS[i];
+  t.completedAt=t.status==="Done"?Date.now():null;
+  await dbPut("tasks/"+id,t);render();
+}
+async function delTask(id){
+  if(!confirm("Delete this task?"))return;
+  delete tasks[id];await dbDel("tasks/"+id);render();
+}
+function renderBoard(){
+  fillSelects();
+  const fS=$("fStream").value,fO=$("fOwner").value;
+  const list=Object.entries(tasks).filter(([id,t])=>(!fS||t.stream===fS)&&(!fO||t.owner===fO));
+  $("board").innerHTML=COLS.map(col=>{
+    const items=list.filter(([id,t])=>t.status===col)
+      .sort((a,b)=>(a[1].due||"9999")<(b[1].due||"9999")?-1:1);
+    return `<div class="col"><h3>${col} <span>${items.length}</span></h3>${items.map(([id,t])=>`
+      <div class="task">
+        <div class="t">${esc(t.title)}</div>
+        <div class="meta">
+          ${t.stream?`<span class="tag">${esc(t.stream)}</span>`:""}
+          ${t.owner?`<span class="tag">${esc(t.owner)}</span>`:""}
+          <span class="tag p-${t.prio}">${t.prio}</span>
+          ${t.due?`<span class="tag ${isOverdue(t)?"overdue":""}">${isOverdue(t)?"⚠ ":""}${t.due}</span>`:""}
+        </div>
+        <div class="acts">
+          <button onclick="moveTask('${id}',-1)" ${t.status==="Backlog"?"disabled":""}>◀</button>
+          <button class="del" onclick="delTask('${id}')">✕</button>
+          <button onclick="moveTask('${id}',1)" ${t.status==="Done"?"disabled":""}>▶</button>
+        </div>
+      </div>`).join("")}</div>`;
+  }).join("");
+}
+
+// ---------- Dashboard ----------
+function renderDash(){
+  const L=Object.values(tasks);
+  const done=L.filter(t=>t.status==="Done").length;
+  const prog=L.filter(t=>t.status==="In Progress").length;
+  const over=L.filter(isOverdue).length;
+  $("sTotal").textContent=L.length;$("sDone").textContent=done;
+  $("sProg").textContent=prog;$("sOver").textContent=over;
+
+  // Donut
+  const byStatus=COLS.map(c=>L.filter(t=>t.status===c).length);
+  const colors=["#B8B0A2","#EDA35F","#E98A3C","#2E7D32"];
+  const total=Math.max(1,L.length);
+  let acc=0;
+  const segs=byStatus.map((n,i)=>{
+    const a0=acc/total*2*Math.PI, a1=(acc+n)/total*2*Math.PI;acc+=n;
+    if(!n)return "";
+    const large=(a1-a0)>Math.PI?1:0;
+    const x0=90+70*Math.sin(a0),y0=90-70*Math.cos(a0),x1=90+70*Math.sin(a1),y1=90-70*Math.cos(a1);
+    return `<path d="M${x0},${y0} A70,70 0 ${large} 1 ${x1},${y1}" stroke="${colors[i]}" stroke-width="26" fill="none"/>`;
+  }).join("");
+  const pct=L.length?Math.round(done/L.length*100):0;
+  $("donut").innerHTML=`<svg viewBox="0 0 180 180" style="max-width:220px;display:block;margin:0 auto">
+    ${L.length?segs:`<circle cx="90" cy="90" r="70" stroke="#EEE" stroke-width="26" fill="none"/>`}
+    <text x="90" y="96" text-anchor="middle" font-size="26" font-weight="700" fill="#701B26">${pct}%</text>
+    <text x="90" y="116" text-anchor="middle" font-size="11" fill="#7A7A7A">done</text></svg>
+    <div class="legend">${COLS.map((c,i)=>`<span><i style="background:${colors[i]}"></i>${c} (${byStatus[i]})</span>`).join("")}</div>`;
+
+  // Workstream bars
+  $("bars").innerHTML=STREAMS.map(s=>{
+    const all=L.filter(t=>t.stream===s).length;
+    const d=L.filter(t=>t.stream===s&&t.status==="Done").length;
+    const w=all?Math.round(d/all*100):0;
+    return `<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${s}</span><span style="color:#7A7A7A">${d}/${all}</span></div>
+      <div style="height:10px;border-radius:999px;background:#EFEAE0;margin-top:4px;overflow:hidden">
+        <div style="height:100%;width:${w}%;background:linear-gradient(90deg,var(--flame1),var(--flame2));border-radius:999px"></div></div></div>`;
+  }).join("");
+
+  // Burndown
+  const created=L.map(t=>t.createdAt).filter(Boolean);
+  if(L.length&&created.length){
+    const start=new Date(new Date(Math.min(...created)).toDateString());
+    const end=new Date(EVENT_DATE);
+    const days=Math.max(1,Math.round((end-start)/86400000));
+    const now=today();
+    const pts=[];
+    for(let i=0;i<=days;i++){
+      const d=new Date(start.getTime()+i*86400000);
+      if(d>now)break;
+      const rem=L.filter(t=>t.createdAt<=d.getTime()+86399999&&!(t.completedAt&&t.completedAt<=d.getTime()+86399999)).length;
+      pts.push([i,rem]);
+    }
+    const maxY=Math.max(...pts.map(p=>p[1]),1);
+    const W=560,H=180,px=i=>30+i/days*(W-50),py=v=>H-25-(v/maxY)*(H-50);
+    const line=pts.map((p,i)=>(i?"L":"M")+px(p[0])+","+py(p[1])).join(" ");
+    $("burn").innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%">
+      <line x1="30" y1="${H-25}" x2="${W-20}" y2="${H-25}" stroke="#DDD"/>
+      <line x1="30" y1="25" x2="30" y2="${H-25}" stroke="#DDD"/>
+      <line x1="${px(0)}" y1="${py(L.length)}" x2="${px(days)}" y2="${py(0)}" stroke="#EDA35F" stroke-width="2" stroke-dasharray="5,4"/>
+      <path d="${line}" stroke="#701B26" stroke-width="2.5" fill="none"/>
+      <text x="30" y="16" font-size="11" fill="#7A7A7A">${maxY} tasks</text>
+      <text x="${W-20}" y="${H-8}" font-size="11" fill="#7A7A7A" text-anchor="end">event day</text></svg>`;
+  } else {
+    $("burn").innerHTML='<p class="hint">Add tasks on the Board and the burndown will draw itself.</p>';
+  }
+
+  // Upcoming / overdue lists
+  const up=L.filter(t=>t.status!=="Done"&&t.due&&!isOverdue(t))
+    .sort((a,b)=>a.due<b.due?-1:1).slice(0,5);
+  $("upcoming").innerHTML=up.length?up.map(t=>
+    `<div style="padding:8px 0;border-bottom:1px solid var(--line);font-size:14px"><b>${t.due}</b> · ${esc(t.title)} ${t.owner?`<span style="color:#7A7A7A">(${esc(t.owner)})</span>`:""}</div>`).join("")
+    :'<p class="hint">Nothing scheduled. Add due dates to tasks.</p>';
+  const ov=L.filter(isOverdue).sort((a,b)=>a.due<b.due?-1:1);
+  $("overdueList").innerHTML=ov.length?ov.map(t=>
+    `<div style="padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--red)"><b>${t.due}</b> · ${esc(t.title)} ${t.owner?`(${esc(t.owner)})`:""}</div>`).join("")
+    :'<p class="hint">Nothing overdue. Keep it that way! 🎉</p>';
+}
+
+// ---------- Timeline ----------
+async function addMilestone(){
+  const title=$("mTitle").value.trim(), date=$("mDate").value;
+  if(!title||!date) return toast("Milestone needs a name and a date.");
+  const m={title,date,done:false};
+  try{const id=await dbPush("milestones",m);milestones[id]=m;
+    $("mTitle").value="";$("mDate").value="";render();toast("Milestone added.");
+  }catch(e){toast("Could not save.")}
+}
+async function toggleMs(id){milestones[id].done=!milestones[id].done;await dbPut("milestones/"+id,milestones[id]);render()}
+async function delMs(id){if(!confirm("Delete this milestone?"))return;delete milestones[id];await dbDel("milestones/"+id);render()}
+function renderTimeline(){
+  const list=Object.entries(milestones).sort((a,b)=>a[1].date<b[1].date?-1:1);
+  $("msList").innerHTML=list.length?list.map(([id,m])=>{
+    const late=!m.done&&new Date(m.date+"T23:59:59")<new Date();
+    return `<div class="ms"><div class="dot ${m.done?"done":late?"overdue":""}"></div>
+      <div><div class="title" ${m.done?'style="text-decoration:line-through;color:#7A7A7A"':""}>${esc(m.title)}</div>
+      <div class="date">${m.date}${late?' · <b style="color:var(--red)">overdue</b>':""}</div></div>
+      <div class="right"><button onclick="toggleMs('${id}')">${m.done?"Undo":"Done ✓"}</button><button onclick="delMs('${id}')">✕</button></div></div>`;
+  }).join(""):'<p class="hint">No milestones yet. Start with the big rocks: venue, publicity launch, registration close, camp day.</p>';
+}
+
+// ---------- Risks ----------
+async function addRisk(){
+  const desc=$("rDesc").value.trim();
+  if(!desc) return toast("Describe the risk first.");
+  const r={desc,impact:$("rImpact").value,mit:$("rMit").value.trim(),open:true,ts:Date.now()};
+  try{const id=await dbPush("risks",r);risks[id]=r;
+    $("rDesc").value="";$("rMit").value="";render();toast("Risk logged.");
+  }catch(e){toast("Could not save.")}
+}
+async function toggleRisk(id){risks[id].open=!risks[id].open;await dbPut("risks/"+id,risks[id]);render()}
+async function delRisk(id){if(!confirm("Delete this risk?"))return;delete risks[id];await dbDel("risks/"+id);render()}
+function renderRisks(){
+  const order={High:0,Medium:1,Low:2};
+  const list=Object.entries(risks).sort((a,b)=>(b[1].open-a[1].open)||(order[a[1].impact]-order[b[1].impact]));
+  $("riskList").innerHTML=list.length?list.map(([id,r])=>`
+    <div class="risk ${r.open?"":"closed"}">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div class="d">${esc(r.desc)}</div>
+        <span class="tag p-${r.impact}">${r.impact} impact</span>
+      </div>
+      ${r.mit?`<div class="m">Plan: ${esc(r.mit)}</div>`:""}
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn outline" style="padding:5px 12px;font-size:12px" onclick="toggleRisk('${id}')">${r.open?"Mark resolved":"Reopen"}</button>
+        <button class="btn ghost" style="padding:5px 8px;font-size:12px;color:var(--red)" onclick="delRisk('${id}')">Delete</button>
+      </div>
+    </div>`).join(""):'<p class="hint">No risks logged. Every project has them; write down the ones that keep you up at night.</p>';
+}
+
+function render(){renderDash();renderBoard();renderTimeline();renderRisks();tick();}
+boot();
+</script>
+</body>
+</html>
